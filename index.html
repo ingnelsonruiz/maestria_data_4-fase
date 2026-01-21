@@ -39,6 +39,10 @@
             margin-bottom: 0.5rem;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
         .container { max-width: 1600px; margin: 0 auto; padding: 2rem; }
         .metrics-grid {
             display: grid;
@@ -57,6 +61,25 @@
             transform: translateY(-8px);
             border-color: var(--secondary);
             box-shadow: 0 20px 40px rgba(139, 0, 0, 0.3);
+        }
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+        .metric-card {
+            position: relative;
+        }
+        .metric-label {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
         .metric-value {
             font-family: 'Syne', sans-serif;
@@ -82,6 +105,11 @@
             margin-bottom: 2rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
+        .chart-container h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
         .chart-wrapper {
             position: relative;
             height: 450px;
@@ -95,14 +123,24 @@
         #mapa { width: 100%; height: 700px; border-radius: 12px; }
         table { width: 100%; border-collapse: collapse; }
         thead { background: rgba(139, 0, 0, 0.3); }
-        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { padding: 1rem; text-align: left; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
         tbody tr:hover { background: rgba(220, 20, 60, 0.1); }
+        .rank { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent); font-size: 1.2rem; }
         footer {
             background: var(--dark-bg);
             border-top: 1px solid var(--border);
             padding: 2rem;
             text-align: center;
             margin-top: 4rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .stat-box {
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
         }
         @media (max-width: 768px) {
             header h1 { font-size: 2rem; }
@@ -113,78 +151,87 @@
 </head>
 <body>
     <header>
-        <h1>馃嚚馃嚧 Conflicto Armado en Colombia</h1>
-        <p>An谩lisis Interactivo - Data Storytelling Maestr铆a UNAD</p>
+        <h1>Conflicto Armado en Colombia</h1>
+        <p>Analisis Interactivo - Data Storytelling Maestria UNAD</p>
     </header>
 
     <div class="container">
         <section class="metrics-grid" id="metricas">
             <div class="metric-card">
-                <div style="opacity: 0.7;">Total de Afectados</div>
+                <div class="metric-label">Total de Afectados</div>
                 <div class="metric-value" id="metric-afectados">Cargando...</div>
             </div>
             <div class="metric-card">
-                <div style="opacity: 0.7;">Total de Eventos</div>
+                <div class="metric-label">Total de Eventos</div>
                 <div class="metric-value" id="metric-eventos">Cargando...</div>
             </div>
             <div class="metric-card">
-                <div style="opacity: 0.7;">Asesinados</div>
+                <div class="metric-label">Asesinados</div>
                 <div class="metric-value" id="metric-asesinados">Cargando...</div>
             </div>
             <div class="metric-card">
-                <div style="opacity: 0.7;">Heridos</div>
+                <div class="metric-label">Heridos</div>
                 <div class="metric-value" id="metric-heridos">Cargando...</div>
             </div>
         </section>
 
         <section class="section">
-            <h2 class="section-title">馃搱 An谩lisis Temporal y Distribuci贸n</h2>
+            <h2 class="section-title">ANALISIS TEMPORAL Y DISTRIBUCION</h2>
             <div class="charts-grid">
                 <div class="chart-container">
-                    <h3 style="color: var(--accent); margin-bottom: 1rem;">Evoluci贸n Anual (2010-2024)</h3>
+                    <h3>Evolucion Anual 2010-2024</h3>
                     <div class="chart-wrapper"><canvas id="g1"></canvas></div>
                 </div>
                 <div class="chart-container">
-                    <h3 style="color: var(--accent); margin-bottom: 1rem;">Heridos vs Asesinados</h3>
+                    <h3>Heridos vs Asesinados</h3>
                     <div class="chart-wrapper" style="height: 350px;"><canvas id="g2"></canvas></div>
                 </div>
             </div>
         </section>
 
         <section class="section">
-            <h2 class="section-title">馃敶 Top 15 Departamentos</h2>
+            <h2 class="section-title">TOP 15 DEPARTAMENTOS</h2>
             <div class="chart-container">
                 <div class="chart-wrapper" style="height: 550px;"><canvas id="g3"></canvas></div>
             </div>
         </section>
 
         <section class="section">
-            <h2 class="section-title">猸?Intensidad por Regi贸n (Radar)</h2>
+            <h2 class="section-title">INTENSIDAD POR REGION</h2>
             <div class="chart-container">
                 <div class="chart-wrapper" style="height: 500px;"><canvas id="g4"></canvas></div>
             </div>
         </section>
 
         <section class="section">
-            <h2 class="section-title">馃椇锔?Mapa de Calor Geogr谩fico</h2>
+            <h2 class="section-title">MAPA DE CALOR GEOGRAFICO</h2>
             <div class="chart-container">
                 <div id="mapa"></div>
+                <p style="margin-top: 1rem; opacity: 0.7; font-size: 0.9rem; text-align: center;">
+                    Rojo oscuro = Mayor concentracion | Tonos claros = Menor concentracion
+                </p>
             </div>
         </section>
 
         <section class="section">
-            <h2 class="section-title">馃挜 Eventos vs Afectados (Bubble)</h2>
+            <h2 class="section-title">EVENTOS VS AFECTADOS</h2>
             <div class="chart-container">
                 <div class="chart-wrapper" style="height: 450px;"><canvas id="g5"></canvas></div>
             </div>
         </section>
 
         <section class="section">
-            <h2 class="section-title">馃彌锔?Municipios M谩s Cr铆ticos</h2>
+            <h2 class="section-title">MUNICIPIOS MAS CRITICOS</h2>
             <div class="chart-container">
                 <table>
                     <thead>
-                        <tr><th>#</th><th>Municipio</th><th>Departamento</th><th>Afectados</th><th>Eventos</th></tr>
+                        <tr>
+                            <th>Ranking</th>
+                            <th>Municipio</th>
+                            <th>Departamento</th>
+                            <th>Afectados</th>
+                            <th>Eventos</th>
+                        </tr>
                     </thead>
                     <tbody id="tabla"></tbody>
                 </table>
@@ -192,16 +239,19 @@
         </section>
 
         <section class="section">
-            <h2 class="section-title">馃搳 Estad铆sticas</h2>
+            <h2 class="section-title">ESTADISTICAS CLAVE</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
-                <div style="background: var(--card-bg); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent);">
-                    <strong>Dpto Cr铆tico:</strong> <span id="depto-critico">-</span>
+                <div class="stat-box">
+                    <strong>Departamento Critico:</strong> <span id="depto-critico">-</span>
                 </div>
-                <div style="background: var(--card-bg); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent);">
-                    <strong>A帽o Cr铆tico:</strong> <span id="ano-critico">-</span>
+                <div class="stat-box">
+                    <strong>Ano Critico:</strong> <span id="ano-critico">-</span>
                 </div>
-                <div style="background: var(--card-bg); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent);">
-                    <strong>Promedio:</strong> <span id="promedio">-</span>
+                <div class="stat-box">
+                    <strong>Promedio por Evento:</strong> <span id="promedio">-</span>
+                </div>
+                <div class="stat-box">
+                    <strong>Periodo de Datos:</strong> 2010-2024 (14 anos)
                 </div>
             </div>
         </section>
@@ -209,7 +259,8 @@
 
     <footer>
         <p><strong>Fuente:</strong> Portal de Datos Abiertos Colombia | datos.gov.co</p>
-        <p>UNAD | Maestr铆a en An谩lisis de Datos | Data Storytelling</p>
+        <p>UNAD - Universidad Nacional Abierta y a Distancia</p>
+        <p>Maestria en Analisis de Datos - Data Storytelling</p>
     </footer>
 
     <script>
@@ -224,7 +275,7 @@
         }
 
         async function descargarDatos() {
-            console.log('鈴?Descargando datos...');
+            console.log('Descargando datos...');
             let todos = [];
             let offset = 0;
             const limit = 50000;
@@ -238,7 +289,7 @@
                     if (!datos || datos.length === 0) break;
                     
                     todos = todos.concat(datos);
-                    console.log(`鉁?${todos.length} registros...`);
+                    console.log(`Registros descargados: ${todos.length}`);
                     offset += limit;
                 } catch (e) {
                     console.error('Error:', e);
@@ -246,7 +297,7 @@
                 }
             }
 
-            console.log(`鉁?Total: ${todos.length} registros`);
+            console.log(`Total de registros: ${todos.length}`);
             return todos;
         }
 
@@ -315,7 +366,7 @@
                 document.getElementById('ano-critico').textContent = maxA.a;
 
                 const prom = stats.totalEventos > 0 ? (stats.totalAfectados / stats.totalEventos).toFixed(1) : 0;
-                document.getElementById('promedio').textContent = prom + ' personas/evento';
+                document.getElementById('promedio').textContent = prom + ' personas';
 
                 const anos = Object.keys(stats.anos).sort().map(a => ({
                     ano: parseInt(a),
@@ -340,7 +391,7 @@
                 grafico6(munis);
                 mapa_calor(deptos);
 
-                console.log('鉁?Dashboard listo');
+                console.log('Dashboard listo');
             } catch (e) {
                 console.error('Error:', e);
                 document.getElementById('metricas').innerHTML = '<p style="color: red; padding: 2rem;">Error: ' + e.message + '</p>';
@@ -353,7 +404,7 @@
             'CAQUETA': [1.6146, -72.2711], 'CAUCA': [2.3741, -76.6104], 'CESAR': [10.2193, -73.1233],
             'CHOCO': [5.6719, -76.6400], 'CORDOBA': [8.7577, -75.8811], 'CUNDINAMARCA': [5.0000, -74.3000],
             'GUAVIARE': [2.5700, -72.6406], 'HUILA': [2.9092, -75.2992], 'LA GUAJIRA': [11.3000, -72.9000],
-            'MAGDALENA': [11.2381, -74.2192], 'META': [4.1433, -71.2807], 'NARI脩O': [1.2136, -77.2833],
+            'MAGDALENA': [11.2381, -74.2192], 'META': [4.1433, -71.2807], 'NARIÑO': [1.2136, -77.2833],
             'NORTE DE SANTANDER': [7.3561, -72.1050], 'PUTUMAYO': [0.8021, -76.5320], 'QUINDIO': [4.5403, -75.4322],
             'RISARALDA': [5.3522, -75.7265], 'SANTANDER': [6.7744, -73.1198], 'SUCRE': [9.3046, -75.3969],
             'TOLIMA': [4.4086, -75.2324], 'VALLE DEL CAUCA': [4.5403, -76.0383], 'VAUPES': [1.0343, -70.1901],
@@ -405,20 +456,20 @@
         function grafico5(deptos) {
             new Chart(document.getElementById('g5'), {
                 type: 'bubble',
-                data: { datasets: [{ label: 'Dpto', data: deptos.map(d => ({ x: d.ev, y: d.af, r: Math.sqrt(d.af/10) })), backgroundColor: 'rgba(220,20,60,0.5)', borderColor: '#FFD700', borderWidth: 2 }] },
+                data: { datasets: [{ label: 'Departamentos', data: deptos.map(d => ({ x: d.ev, y: d.af, r: Math.sqrt(d.af/10) })), backgroundColor: 'rgba(220,20,60,0.5)', borderColor: '#FFD700', borderWidth: 2 }] },
                 options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { callback: v => fmt(v) } }, y: { ticks: { callback: v => fmt(v) } } } }
             });
         }
 
         function grafico6(munis) {
             const tbody = document.getElementById('tabla');
-            tbody.innerHTML = munis.map((m, i) => `<tr><td style="color:var(--accent);font-weight:bold;">${i+1}</td><td><strong>${m.mun}</strong></td><td>${m.dep}</td><td style="color:var(--accent);font-weight:bold;">${fmt(m.af)}</td><td>${m.ev}</td></tr>`).join('');
+            tbody.innerHTML = munis.map((m, i) => `<tr><td><span class="rank">${i+1}</span></td><td><strong>${m.mun}</strong></td><td>${m.dep}</td><td style="color:var(--accent);font-weight:bold;">${fmt(m.af)}</td><td>${m.ev}</td></tr>`).join('');
         }
 
         function mapa_calor(deptos) {
             if (mapa) mapa.remove();
             mapa = L.map('mapa').setView([4.5, -74.3], 5);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '漏 OpenStreetMap', maxZoom: 19 }).addTo(mapa);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap', maxZoom: 19 }).addTo(mapa);
 
             const max = Math.max(...deptos.map(d => d.af));
             deptos.forEach(d => {
