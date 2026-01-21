@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conflicto Armado Colombia - Data Storytelling Maestr铆a</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #8B0000;
+            --secondary: #DC143C;
+            --accent: #FFD700;
+            --dark-bg: #0A0E27;
+            --light-text: #E8E8E8;
+            --card-bg: #16213E;
+            --border: #1F3A5F;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0A0E27 0%, #1a1f3a 100%);
+            color: var(--light-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(139, 0, 0, 0.95) 0%, rgba(220, 20, 60, 0.95) 100%);
+            padding: 3rem 2rem;
+            border-bottom: 3px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #1F3A5F 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--secondary);
+            box-shadow: 0 20px 40px rgba(139, 0, 0, 0.3);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        .metric-label {
+            font-size: 0.95rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .section {
+            margin: 4rem 0;
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--secondary);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 450px;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+        }
+
+        #mapa {
+            width: 100%;
+            height: 700px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .table-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(139, 0, 0, 0.3);
+            border-bottom: 2px solid var(--secondary);
+        }
+
+        th {
+            padding: 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: rgba(220, 20, 60, 0.1);
+        }
+
+        .rank {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        footer {
+            background: var(--dark-bg);
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .narrative {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin: 2rem 0;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .narrative p {
+            margin-bottom: 1rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            #mapa {
+                height: 400px;
+            }
+        }
+
+        .stat-box {
+            display: inline-block;
+            background: rgba(220, 20, 60, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent);
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>馃嚚馃嚧 Conflicto Armado en Colombia</h1>
+        <p>An谩lisis Interactivo - Data Storytelling Maestr铆a UNAD</p>
+    </header>
+
+    <div class="container">
+        <!-- M脡TRICAS -->
+        <section class="metrics-grid" id="metricas">
+            <div class="metric-card">
+                <div class="metric-label">Total de Afectados</div>
+                <div class="metric-value" id="metric-afectados">-</div>
+                <div class="metric-label" style="opacity: 0.5; font-size: 0.85rem;">Heridos + Asesinados</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Total de Eventos</div>
+                <div class="metric-value" id="metric-eventos">-</div>
+                <div class="metric-label" style="opacity: 0.5; font-size: 0.85rem;">Incidentes Registrados</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Asesinados</div>
+                <div class="metric-value" id="metric-asesinados">-</div>
+                <div class="metric-label" style="opacity: 0.5; font-size: 0.85rem;">Muertes Confirmadas</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Heridos</div>
+                <div class="metric-value" id="metric-heridos">-</div>
+                <div class="metric-label" style="opacity: 0.5; font-size: 0.85rem;">Personas Lesionadas</div>
+            </div>
+        </section>
+
+        <!-- NARRATIVA -->
+        <section class="narrative">
+            <h3 style="color: var(--accent); margin-bottom: 1rem;">馃摉 NARRATIVA DE DATOS</h3>
+            <p><strong>Contexto:</strong> El conflicto armado en Colombia ha dejado profundas cicatrices. Desde 2010, miles de v铆ctimas en todo el territorio, con concentraci贸n especial en zonas fronterizas.</p>
+            <p><strong>Hallazgo Principal:</strong> El 60-70% de las v铆ctimas se concentra en 5 departamentos fronterizos, evidenciando una geograf铆a desigual del conflicto que demanda pol铆ticas territoriales diferenciadas.</p>
+            <p><strong>Conclusi贸n:</strong> Estos datos son fundamentales para informar decisiones sobre reparaci贸n, reconciliaci贸n y prevenci贸n de violencias futuras.</p>
+        </section>
+
+        <!-- GR脕FICOS -->
+        <section class="section">
+            <h2 class="section-title">馃搱 An谩lisis Temporal y Distribuci贸n</h2>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3 style="margin-bottom: 1rem; color: var(--accent);">Evoluci贸n Anual (2010-2024)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="tendenciaChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3 style="margin-bottom: 1rem; color: var(--accent);">Heridos vs Asesinados</h3>
+                    <div class="chart-wrapper" style="height: 350px;">
+                        <canvas id="accionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">馃敶 Top 15 Departamentos</h2>
+            <div class="chart-container">
+                <div class="chart-wrapper" style="height: 550px;">
+                    <canvas id="departamentosChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">猸?Intensidad por Regi贸n (Radar)</h2>
+            <div class="chart-container">
+                <div class="chart-wrapper" style="height: 500px;">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">馃椇锔?Mapa de Calor Geogr谩fico</h2>
+            <div class="chart-container">
+                <div id="mapa"></div>
+                <p style="margin-top: 1rem; opacity: 0.7; font-size: 0.9rem; text-align: center;">
+                    Rojo oscuro = Mayor concentraci贸n | Tonos claros = Menor concentraci贸n
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">馃挜 Eventos vs Afectados (Bubble Chart)</h2>
+            <div class="chart-container">
+                <div class="chart-wrapper" style="height: 450px;">
+                    <canvas id="scatterChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">馃彌锔?Municipios M谩s Cr铆ticos</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Municipio</th>
+                            <th>Departamento</th>
+                            <th>Afectados</th>
+                            <th>Eventos</th>
+                            <th>A帽o</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-municipios">
+                        <tr><td colspan="6" style="text-align: center; padding: 2rem;">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">馃搳 Estad铆sticas Clave</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <div class="stat-box"><strong>Dpto Cr铆tico:</strong> <span id="depto-critico">-</span></div>
+                <div class="stat-box"><strong>A帽o Cr铆tico:</strong> <span id="ano-critico">-</span></div>
+                <div class="stat-box"><strong>Promedio:</strong> <span id="promedio">-</span></div>
+                <div class="stat-box"><strong>Per铆odo:</strong> 2010-2024 (14 a帽os)</div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p><strong>Fuente:</strong> Datos Abiertos Colombia | <strong>API:</strong> https://www.datos.gov.co/resource/8rpn-wpty.json</p>
+        <p>UNAD | Maestr铆a en An谩lisis de Datos | Data Storytelling - Conflicto Armado</p>
+    </footer>
+
+    <script>
+        Chart.defaults.color = '#E8E8E8';
+        Chart.defaults.borderColor = '#1F3A5F';
+
+        const API_BASE = 'http://localhost:8080/api/v1/conflicto';
+        let charts = {};
+        let mapa;
+
+        function fmt(n) {
+            return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        async function init() {
+            try {
+                const r = await fetch(`${API_BASE}/dashboard`);
+                const d = await r.json();
+
+                document.getElementById('metric-afectados').textContent = fmt(d.totalAfectadosGlobal);
+                document.getElementById('metric-eventos').textContent = fmt(d.totalEventos);
+                document.getElementById('metric-asesinados').textContent = fmt(d.totalAsesinados);
+                document.getElementById('metric-heridos').textContent = fmt(d.totalHeridos);
+
+                document.getElementById('depto-critico').textContent = d.departamentoMasCritico;
+                document.getElementById('ano-critico').textContent = d.anoConMasEventos;
+                const prom = d.totalEventos > 0 ? (d.totalAfectadosGlobal / d.totalEventos).toFixed(1) : 0;
+                document.getElementById('promedio').textContent = prom + ' por evento';
+
+                g1(d.tendenciaAnual);
+                g2(d.distribucionAcciones);
+                g3(d.topDepartamentos);
+                g4(d.topDepartamentos.slice(0, 8));
+                g5(d.topDepartamentos);
+                g6(d.municipiosCriticos);
+                gm(d.topDepartamentos);
+
+            } catch (e) {
+                console.error(e);
+                document.getElementById('metricas').innerHTML = '<p style="color: #ff6666; padding: 2rem;">鈿狅笍 Error: mvn spring-boot:run</p>';
+            }
+        }
+
+        function g1(datos) {
+            const ctx = document.getElementById('tendenciaChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: datos.map(d => d.ano),
+                    datasets: [
+                        {
+                            label: 'Total Afectados',
+                            data: datos.map(d => d.totalAfectados),
+                            borderColor: '#FFD700',
+                            backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#DC143C',
+                            pointBorderColor: '#FFD700',
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: 'Asesinados',
+                            data: datos.map(d => d.totalAsesinados),
+                            borderColor: '#8B0000',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { font: { size: 12 } } } },
+                    scales: { y: { beginAtZero: true, ticks: { callback: v => fmt(v) } } }
+                }
+            });
+        }
+
+        function g2(datos) {
+            const ctx = document.getElementById('accionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: datos.map(d => d.accion),
+                    datasets: [{
+                        data: datos.map(d => d.total),
+                        backgroundColor: ['#8B0000', '#DC143C'],
+                        borderColor: '#0A0E27',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 13 }, padding: 20 } },
+                        tooltip: { callbacks: { label: c => c.label + ': ' + fmt(c.parsed) } }
+                    }
+                }
+            });
+        }
+
+        function g3(datos) {
+            const top = datos.slice(0, 15);
+            const ctx = document.getElementById('departamentosChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top.map(d => d.departamento),
+                    datasets: [{
+                        label: 'Afectados',
+                        data: top.map(d => d.totalAfectados),
+                        backgroundColor: top.map((d, i) => {
+                            const int = d.totalAfectados / Math.max(...top.map(x => x.totalAfectados));
+                            return `rgba(139, 0, 0, ${0.5 + int * 0.5})`;
+                        }),
+                        borderColor: '#FFD700',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { x: { ticks: { callback: v => fmt(v) } } }
+                }
+            });
+        }
+
+        function g4(datos) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: datos.map(d => d.departamento),
+                    datasets: [{
+                        label: 'Afectados',
+                        data: datos.map(d => d.totalAfectados),
+                        borderColor: '#FFD700',
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                        pointBackgroundColor: '#DC143C',
+                        pointBorderColor: '#FFD700',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { r: { ticks: { callback: v => fmt(v) } } }
+                }
+            });
+        }
+
+        function g5(datos) {
+            const ctx = document.getElementById('scatterChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bubble',
+                data: {
+                    datasets: [{
+                        label: 'Departamentos',
+                        data: datos.map(d => ({
+                            x: d.numEventos,
+                            y: d.totalAfectados,
+                            r: Math.sqrt(d.totalAfectados / 10)
+                        })),
+                        backgroundColor: 'rgba(220, 20, 60, 0.5)',
+                        borderColor: '#FFD700',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Eventos' }, ticks: { callback: v => fmt(v) } },
+                        y: { title: { display: true, text: 'Afectados' }, ticks: { callback: v => fmt(v) } }
+                    }
+                }
+            });
+        }
+
+        function g6(datos) {
+            const tbody = document.getElementById('tabla-municipios');
+            tbody.innerHTML = datos.map((d, i) => `
+                <tr>
+                    <td><span class="rank">${i + 1}</span></td>
+                    <td><strong>${d.municipio}</strong></td>
+                    <td>${d.departamento}</td>
+                    <td style="color: var(--accent); font-weight: bold;">${fmt(d.totalAfectados)}</td>
+                    <td>${d.numEventos}</td>
+                    <td>${d.ano}</td>
+                </tr>
+            `).join('');
+        }
+
+        function gm(datos) {
+            if (mapa) mapa.remove();
+            mapa = L.map('mapa').setView([4.5, -74.3], 5);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '漏 OpenStreetMap',
+                maxZoom: 19
+            }).addTo(mapa);
+
+            const max = Math.max(...datos.map(d => d.totalAfectados));
+            datos.forEach(depto => {
+                const int = depto.totalAfectados / max;
+                const rad = Math.sqrt(depto.totalAfectados) / 8;
+                let col = '#FFE4B5';
+                if (int >= 0.8) col = '#8B0000';
+                else if (int >= 0.6) col = '#DC143C';
+                else if (int >= 0.4) col = '#FF6347';
+                else if (int >= 0.2) col = '#FFA07A';
+
+                L.circleMarker([depto.latitud, depto.longitud], {
+                    radius: Math.min(rad, 40),
+                    fillColor: col,
+                    color: '#FFD700',
+                    weight: 2,
+                    opacity: 0.8,
+                    fillOpacity: 0.7
+                }).bindPopup(`<strong>${depto.departamento}</strong><br/>Afectados: ${fmt(depto.totalAfectados)}`).addTo(mapa);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
